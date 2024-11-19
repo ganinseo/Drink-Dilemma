@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>카페 검색</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        select, input[type="text"], button {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: calc(33.33% - 10px);
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: auto;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 1px solid #ddd;
+        }
+
+        .results h2 {
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        .table-container {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+            color: #555;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .empty-result {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>강남대학교 주변 카페 검색</h1>
+
+    <!-- 검색 폼 -->
+    <form action="/cafe/search" method="GET">
+        <label for="searchType">검색 조건:</label>
+        <select id="searchType" name="searchType">
+            <option value="all">전체</option>
+            <option value="storeName">가게명</option>
+            <option value="menuName">메뉴명</option>
+            <option value="address">동명</option>
+        </select>
+
+        <label for="keyword">검색어:</label>
+        <input type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요">
+
+        <button type="submit">검색</button>
+    </form>
+
+    <hr/>
+
+    <!-- 검색 결과 -->
+    <div class="results">
+        <h2>검색 결과</h2>
+        <div th:if="${#lists.isEmpty(cafes)}" class="empty-result">
+            검색 결과가 없습니다.
+        </div>
+        <div th:if="${!#lists.isEmpty(cafes)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>가게명</th>
+                    <th>메뉴명</th>
+                    <th>주소</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="cafe : ${cafes}">
+                    <td th:text="${cafe.storeName}">가게명</td>
+                    <td th:text="${cafe.bestMenu}">메뉴명</td>
+                    <td th:text="${cafe.address}">주소</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
