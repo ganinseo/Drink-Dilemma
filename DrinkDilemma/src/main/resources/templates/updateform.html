@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>카페 정보 수정</h2>
+<form action="/cafe/update" th:object="${cafe}" method="post">
+    <div>
+        <label>카페 ID:</label>
+        <input th:field="*{idx}" readonly> <br/>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>카페 이름:</label>
+        <input th:field="*{storeName}" placeholder="카페 이름 입력"> <br/>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>주소:</label>
+        <input th:field="*{address}" placeholder="카페 주소 입력"> <br/>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>설명:</label>
+        <textarea th:field="*{content}" rows="5" cols="40" placeholder="카페 설명 입력"></textarea> <br/>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>추천 메뉴:</label>
+        <input th:field="*{bestMenu}" placeholder="추천 메뉴 입력"> <br/>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>영업 시간:</label>
+        <input th:field="*{time}" placeholder="영업 시간 입력"> <br/>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>평점:</label>
+        <input th:field="*{rating}" placeholder="평점 입력"> <br/>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <input type="submit" value="수정" style="padding: 8px 12px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer;">
+    </div>
+</form>
+
+
+
+</body>
+</html>

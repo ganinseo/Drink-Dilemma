@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        let menuCount = 1;
+
+        function addMenuField() {
+            const menuContainer = document.getElementById("menuContainer");
+
+            const menuField = document.createElement("div");
+            menuField.className = "menu-item";
+            menuField.style.marginBottom = "10px";
+
+            const menuNameInput = document.createElement("input");
+            menuNameInput.type = "text";
+            menuNameInput.name = "menuNames";
+            menuNameInput.id = `menuName${menuCount}`;
+            menuNameInput.placeholder = "메뉴 이름";
+            menuNameInput.required = true;
+            menuNameInput.style = "width: 45%; padding: 8px; margin: 4px;";
+
+            const menuPriceInput = document.createElement("input");
+            menuPriceInput.type = "text";
+            menuPriceInput.name = "menuPrices";
+            menuPriceInput.id = `menuPrice${menuCount}`;
+            menuPriceInput.placeholder = "가격";
+            menuPriceInput.required = true;
+            menuPriceInput.style = "width: 45%; padding: 8px; margin: 4px;";
+
+            menuField.appendChild(menuNameInput);
+            menuField.appendChild(menuPriceInput);
+            menuContainer.appendChild(menuField);
+
+            menuCount++;
+        }
+    </script>
+</head>
+<body>
+
+<form action="/cafe/add" method="post" style="max-width: 400px; margin: 0 auto; font-family: Arial, sans-serif;">
+    <h2 style="text-align: center;">카페 정보 입력</h2>
+
+    <label for="storeName">카페 이름:</label>
+    <input type="text" id="storeName" name="storeName" required style="width: 100%; padding: 8px; margin: 4px 0;">
+
+    <label for="address">주소:</label>
+    <input type="text" id="address" name="address" required style="width: 100%; padding: 8px; margin: 4px 0;">
+
+    <label for="content">카페 설명:</label>
+    <input type="text" id="content" name="content" required style="width: 100%; padding: 8px; margin: 4px 0;">
+
+    <label for="bestMenu">베스트 메뉴:</label>
+    <input type="text" id="bestMenu" name="bestMenu" required style="width: 100%; padding: 8px; margin: 4px 0;">
+
+    <label for="time">영업 시간:</label>
+    <input type="text" id="time" name="time" placeholder="예: 10:00 - 22:00" required style="width: 100%; padding: 8px; margin: 4px 0;">
+
+    <label for="menuName1">메뉴들:</label>
+    <div id="menuContainer">
+        <div class="menu-item">
+            <input type="text" id="menuName1" name="menuNames" placeholder="메뉴 이름" required style="width: 45%; padding: 8px; margin: 4px;">
+            <input type="text" id="menuPrice1" name="menuPrices" placeholder="가격" required style="width: 45%; padding: 8px; margin: 4px;">
+        </div>
+    </div>
+    <button type="button" onclick="addMenuField()" style="margin-top: 10px;">메뉴 추가</button>
+
+    <button type="submit" style="width: 100%; padding: 10px; background-color: #4CAF50; color: white; border: none; margin-top: 10px; font-size: 16px; cursor: pointer;">작성</button>
+</form>
+
+</body>
+</html>
