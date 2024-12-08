@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>당신의 오늘의 카페는?</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .search-form {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-form select,
+    .search-form input[type="text"],
+    .search-form button {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .search-form select {
+      width: 30%;
+    }
+
+    .search-form input[type="text"] {
+      flex-grow: 1;
+    }
+
+    .search-form button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .search-form button:hover {
+      background-color: #0056b3;
+    }
+
+    .filter-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .filter-buttons button {
+      flex-grow: 1;
+      margin-right: 5px;
+      padding: 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      background-color: #CEDDFE;
+      color: white;
+      cursor: pointer;
+    }
+
+    .filter-buttons button:last-child {
+      margin-right: 0;
+    }
+
+    .filter-buttons button:hover {
+      opacity: 0.8;
+    }
+
+    .cafe-list {
+      margin-top: 20px;
+    }
+
+    .cafe-item {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .cafe-item h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #007bff;
+    }
+
+    .cafe-item h2 a {
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    .cafe-item h2 a:hover {
+      text-decoration: underline;
+    }
+
+    .cafe-item p {
+      margin: 5px 0;
+      color: #555;
+    }
+
+    .actions {
+      margin-top: 10px;
+    }
+
+    .actions a {
+      text-decoration: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .actions a.delete {
+      background-color: #d9534f;
+    }
+
+    .actions a.update {
+      background-color: #007bff;
+    }
+
+    .actions a:hover {
+      opacity: 0.8;
+    }
+
+    .add-button {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .add-button a {
+      text-decoration: none;
+      background-color: #5cb85c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .add-button a:hover {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+<h1>강남대학교 주변 카페</h1>
+
+<!-- 검색 폼 -->
+<form class="search-form" action="/cafe/search" method="GET">
+  <label for="searchType">검색 조건:</label>
+  <select id="searchType" name="searchType">
+    <option value="all">전체</option>
+    <option value="storeName">가게명</option>
+    <option value="menuName">메뉴명</option>
+    <option value="address">동명</option>
+  </select>
+  <label for="keyword">검색어:</label>
+  <input type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요">
+  <button type="submit">검색</button>
+</form>
+
+<!-- 필터링 버튼 -->
+<div class="filter-buttons">
+  <button type="button" data-filter="default">기본</button>
+  <button type="button" data-filter="highRating">높은 평점</button>
+  <button type="button" data-filter="lowRating">낮은 평점</button>
+  <button type="button" data-filter="manyReviews">많은 리뷰</button>
+  <button type="button" data-filter="recentUpdates">최신 업데이트</button>
+  <button type="button" data-filter="openNow">영업 중</button>
+</div>
+
+<!-- 카페 리스트 -->
+<div class="cafe-list" id="cafe-list"></div>
+
+<div class="add-button">
+  <a href="/cafe/filtersearch/addform">추가</a>
+</div>
+
+<script>
+  const cafeList = document.getElementById('cafe-list');
+  const filterButtons = document.querySelectorAll('.filter-buttons button');
+
+  // 렌더링 함수
+  function renderCafes(cafes) {
+    cafeList.innerHTML = cafes.map(cafe => `
+      <div class="cafe-item">
+        <h2><a href="/cafe/filtersearch/${cafe.idx}">${cafe.storeName}</a></h2>
+        <p>주소: ${cafe.address}</p>
+        <p>인기 메뉴: ${cafe.bestMenu}</p>
+        <p>평점: ${cafe.rating}</p>
+        <div class="actions">
+          <a href="/cafe/filtersearch/updateform/${cafe.idx}" class="update">수정</a>
+          <a href="/cafe/filtersearch/delete/${cafe.idx}" class="delete">삭제</a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // 서버에서 카페 데이터 가져오기
+  async function fetchCafes(filterType = 'default') {
+    try {
+      const response = await fetch(`/cafe/filtersearch/filter?filterType=${filterType}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const cafes = await response.json();
+      renderCafes(cafes);
+    } catch (error) {
+      console.error('Error fetching cafes:', error);
+      cafeList.innerHTML = '<p>데이터를 가져오는 중 오류가 발생했습니다.</p>';
+    }
+  }
+
+  // 필터 버튼 클릭 이벤트 처리
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const filterType = button.getAttribute('data-filter');
+      fetchCafes(filterType);
+    });
+  });
+
+  // 초기 로드 (기본 필터)
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchCafes(); // 기본 데이터를 로드
+  });
+</script>
+</body>
+</html>

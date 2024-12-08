@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>카페 세부 조회</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .info {
+            margin-bottom: 20px;
+            margin-right: 20px;
+        }
+
+        .info label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .info span,
+        .info textarea {
+            font-size: 14px;
+            color: #333;
+            display: block;
+        }
+
+        .info textarea {
+            width: 100%;
+            resize: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #f7f7f7;
+            margin-top: 5px;
+        }
+
+        .menu-list {
+            margin-top: 30px;
+        }
+
+        .menu-list h3 {
+            color: #444;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background-color: #fafafa;
+        }
+
+        .menu-item span {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .menu-item .price {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .actions a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .actions .delete {
+            background-color: #d9534f;
+        }
+
+        .actions .update {
+            background-color: #5bc0de;
+        }
+
+        .actions a:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>이 카페는!</h2>
+
+    <div class="info">
+        <label>카페 이름:</label>
+        <span style="font-weight: bold;">[[${cafe.storeName}]]</span>
+    </div>
+
+    <div class="info">
+        <label>설명:</label>
+        <textarea rows="5" cols="40" th:text="${cafe.content}" readonly></textarea>
+    </div>
+
+    <div class="info">
+        <label>주소:</label>
+        <span>[[${cafe.address}]]</span>
+    </div>
+
+    <div class="info">
+        <label>추천 메뉴:</label>
+        <span>[[${cafe.bestMenu}]]</span>
+    </div>
+
+    <div class="info">
+        <label>영업 시간:</label>
+        <span th:each="time, iter : ${cafe.time}">
+        <span th:text="${time}"></span>
+        <span th:if="${!iter.last}"> </span>
+    </span>
+    </div>
+
+    <div class="info">
+        <label>평점:</label>
+        <span>[[${cafe.rating}]]</span>
+    </div>
+
+    <div class="menu-list">
+        <h3>메뉴</h3>
+        <ul style="padding: 0; list-style: none;">
+            <li th:each="menu : ${menus}" class="menu-item">
+                <span th:text="${menu.menuName}">메뉴 이름</span>
+                <span th:text="${menu.price}" class="price">가격</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="review-section">
+        <h3>리뷰</h3>
+        <!-- 리뷰 리스트 -->
+        <ul style="padding: 0; list-style: none;">
+            <li th:each="review : ${reviews}" style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa;">
+                <div>
+                    <!-- 작성자와 평점 -->
+                    <strong th:text="${review.userName}" style="margin-right: 10px;">작성자</strong>
+                    <span th:text="'평점: ' + ${review.rating}">평점</span>
+                </div>
+                <!-- 리뷰 내용 -->
+                <p th:text="${review.comment}" style="margin: 10px 0;">리뷰 내용</p>
+                <!-- 수정/삭제 버튼 -->
+                <div style="margin-top: 10px;">
+                    <a th:href="@{/review/updateform/{id}(id=${review.idx})}" style="margin-right: 10px; color: #007bff; text-decoration: underline; cursor: pointer;">수정</a>
+                    <a th:href="@{/review/delete/{id}(id=${review.idx}, cafeId=${cafe.idx})}" style="color: red; text-decoration: underline; cursor: pointer;">삭제</a>
+                </div>
+            </li>
+        </ul>
+
+        <!-- 리뷰 작성 폼 -->
+        <form th:action="@{/review/save}" method="post" style="margin-top: 20px;">
+            <div class="info">
+                <label for="userName">작성자 이름:</label>
+                <input type="text" id="userName" name="userName" required style="width: 100%; padding: 8px; margin: 4px 0;">
+            </div>
+
+            <div class="info">
+                <label for="comment">리뷰 내용:</label>
+                <textarea id="comment" name="comment" rows="4" required style="width: 100%; resize: none; padding: 8px; margin: 4px 0;"></textarea>
+            </div>
+
+            <div class="info">
+                <label for="rating">평점 (1.0 - 5.0):</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" step="0.5" required style="width: 100%; padding: 8px; margin: 4px 0;">
+            </div>
+
+            <input type="hidden" name="cafeId" th:value="${cafe.idx}">
+            <button type="submit" style="background-color: #5cb85c; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">리뷰 작성</button>
+        </form>
+    </div>
+
+    <div class="actions">
+        <a th:href="@{/cafe/filtersearch/delete/{idx}(idx=${cafe.idx})}" class="delete">삭제</a>
+        <a th:href="@{/cafe/filtersearch/updateform/{idx}(idx=${cafe.idx})}" class="update">수정</a>
+    </div>
+</div>
+
+</body>
+</html>
